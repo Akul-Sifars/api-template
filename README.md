@@ -35,6 +35,7 @@ cd express-typescript-api-template
 ```bash
 npm install
 ```
+> **Note:** This automatically sets up Git hooks (Husky) for code quality checks.
 
 ### Step 3: Environment Setup
 ```bash
