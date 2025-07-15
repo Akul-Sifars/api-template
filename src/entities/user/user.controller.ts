@@ -6,12 +6,12 @@
  *   @ai_context: User controller using base controller logic
  */
 
-import { BaseController } from '../base/base.controller';
-import { UserModel } from './user.model';
-import { UserService } from './user.service';
+import { BaseController } from '@/entities/base/base.controller';
+import { UserModel } from '@/entities/user/user.model';
+import { UserService } from '@/entities/user/user.service';
 
 export class UserController extends BaseController<UserModel> {
   constructor() {
     super(new UserService());
   }
-} 
+}

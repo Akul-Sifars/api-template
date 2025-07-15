@@ -7,7 +7,7 @@
  */
 
 import { Router } from 'express';
-import { BaseController } from './base.controller';
+import { BaseController } from '@/entities/base/base.controller';
 import { Model } from 'sequelize';
 
 export abstract class BaseRoutes<T extends Model> {
@@ -41,4 +41,4 @@ export abstract class BaseRoutes<T extends Model> {
   protected addCustomRoutes(): void {
     // Override in child classes to add custom routes
   }
-} 
+}

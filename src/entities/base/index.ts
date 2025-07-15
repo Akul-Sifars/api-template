@@ -7,14 +7,7 @@
  */
 
 // Export CRUD base class and interfaces
-export {
-  BaseCrudService,
-  BaseEntity,
-  CreateEntityData,
-  UpdateEntityData,
-  QueryOptions,
-  PaginatedResult
-} from './base.service';
+export { BaseCrudService } from './base.service';
 
 // Export controller base class
 export { BaseController } from './base.controller';
@@ -23,7 +16,4 @@ export { BaseController } from './base.controller';
 export { BaseRoutes } from './base.routes';
 
 // Export model base fields and options
-export {
-  baseModelFields,
-  baseModelOptions
-} from './base.model'; 
+export { baseModelFields, baseModelOptions } from './base.model';

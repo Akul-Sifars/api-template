@@ -6,11 +6,11 @@
  *   @ai_context: User CRUD service using base CRUD logic
  */
 
-import { BaseCrudService } from '../base/base.service';
-import { UserModel } from './user.model';
+import { BaseCrudService } from '@/entities/base/base.service';
+import { UserModel } from '@/entities/user/user.model';
 
 export class UserService extends BaseCrudService<UserModel> {
   constructor() {
     super(UserModel);
   }
-} 
+}

@@ -77,12 +77,12 @@
  *         description: User deleted
  */
 
-import { BaseRoutes } from '../base/base.routes';
-import { UserModel } from './user.model';
-import { UserController } from './user.controller';
+import { BaseRoutes } from '@/entities/base/base.routes';
+import { UserModel } from '@/entities/user/user.model';
+import { UserController } from '@/entities/user/user.controller';
 
 export class UserRoutes extends BaseRoutes<UserModel> {
   constructor() {
     super(new UserController(), 'users');
   }
-} 
+}

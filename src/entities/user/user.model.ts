@@ -7,7 +7,7 @@
  */
 
 import { DataTypes, Model } from 'sequelize';
-import { baseModelFields, baseModelOptions } from '../base/base.model';
+import { baseModelFields, baseModelOptions } from '@/entities/base/base.model';
 
 export interface UserAttributes {
   id: string;
@@ -44,4 +44,4 @@ UserModel.init(
     modelName: 'User',
     tableName: 'users',
   }
-); 
+);

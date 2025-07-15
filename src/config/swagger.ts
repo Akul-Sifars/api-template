@@ -19,7 +19,8 @@ const options = {
     info: {
       title: 'Express TypeScript API Template',
       version: '1.0.0',
-      description: 'A comprehensive API template with PostgreSQL, Swagger documentation, and CRUD operations',
+      description:
+        'A comprehensive API template with PostgreSQL, Swagger documentation, and CRUD operations',
       contact: {
         name: 'API Support',
         email: 'support@example.com',
@@ -176,4 +177,4 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
-export { specs, swaggerUi }; 
+export { specs, swaggerUi };

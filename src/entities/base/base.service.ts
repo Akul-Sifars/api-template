@@ -7,38 +7,14 @@
  */
 
 import { Model, FindOptions, WhereOptions, ModelStatic } from 'sequelize';
-import { logger } from '../../shared/utils/logger';
+import { logger } from '@/utils/logger';
 import chalk from 'chalk';
-
-export interface BaseEntity {
-  id: string;
-  created_at?: Date;
-  updated_at?: Date;
-}
-
-export interface CreateEntityData {
-  [key: string]: unknown;
-}
-
-export interface UpdateEntityData {
-  [key: string]: unknown;
-}
-
-export interface QueryOptions {
-  limit?: number;
-  offset?: number;
-  orderBy?: string;
-  orderDirection?: 'ASC' | 'DESC';
-  where?: Record<string, any>;
-}
-
-export interface PaginatedResult<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import {
+  CreateEntityData,
+  PaginatedResult,
+  QueryOptions,
+  UpdateEntityData,
+} from '@/entities/base/types';
 
 export abstract class BaseCrudService<T extends Model> {
   protected model: ModelStatic<T>;
@@ -49,18 +25,25 @@ export abstract class BaseCrudService<T extends Model> {
 
   async create(data: CreateEntityData): Promise<T> {
     try {
-      const result = await this.model.create(data as never) as T;
-      logger.info(chalk.green(`✓ Created ${this.model.name} record with ID: ${(result as any).id}`));
+      const result = (await this.model.create(data as never)) as T;
+      logger.info(
+        chalk.green(
+          `✓ Created ${this.model.name} record with ID: ${(result as any).id}`
+        )
+      );
       return result;
     } catch (error) {
-      logger.error(chalk.red(`Error creating ${this.model.name} record:`), error);
+      logger.error(
+        chalk.red(`Error creating ${this.model.name} record:`),
+        error
+      );
       throw error;
     }
   }
 
   async findById(id: string): Promise<T | null> {
     try {
-      const result = await this.model.findByPk(id) as T | null;
+      const result = (await this.model.findByPk(id)) as T | null;
       return result;
     } catch (error) {
       logger.error(chalk.red(`Error finding ${this.model.name} by ID:`), error);
@@ -70,7 +53,13 @@ export abstract class BaseCrudService<T extends Model> {
 
   async findAll(options: QueryOptions = {}): Promise<PaginatedResult<T>> {
     try {
-      const { limit = 10, offset = 0, orderBy = 'created_at', orderDirection = 'DESC', where = {} } = options;
+      const {
+        limit = 10,
+        offset = 0,
+        orderBy = 'created_at',
+        orderDirection = 'DESC',
+        where = {},
+      } = options;
       const findOptions: FindOptions = {
         where: where as WhereOptions,
         limit,
@@ -91,7 +80,10 @@ export abstract class BaseCrudService<T extends Model> {
         totalPages,
       };
     } catch (error) {
-      logger.error(chalk.red(`Error finding ${this.model.name} records:`), error);
+      logger.error(
+        chalk.red(`Error finding ${this.model.name} records:`),
+        error
+      );
       throw error;
     }
   }
@@ -103,10 +95,15 @@ export abstract class BaseCrudService<T extends Model> {
         return null;
       }
       await record.update(data);
-      logger.info(chalk.green(`✓ Updated ${this.model.name} record with ID: ${id}`));
+      logger.info(
+        chalk.green(`✓ Updated ${this.model.name} record with ID: ${id}`)
+      );
       return record as T;
     } catch (error) {
-      logger.error(chalk.red(`Error updating ${this.model.name} record:`), error);
+      logger.error(
+        chalk.red(`Error updating ${this.model.name} record:`),
+        error
+      );
       throw error;
     }
   }
@@ -118,30 +115,43 @@ export abstract class BaseCrudService<T extends Model> {
         return false;
       }
       await record.destroy();
-      logger.info(chalk.green(`✓ Deleted ${this.model.name} record with ID: ${id}`));
+      logger.info(
+        chalk.green(`✓ Deleted ${this.model.name} record with ID: ${id}`)
+      );
       return true;
     } catch (error) {
-      logger.error(chalk.red(`Error deleting ${this.model.name} record:`), error);
+      logger.error(
+        chalk.red(`Error deleting ${this.model.name} record:`),
+        error
+      );
       throw error;
     }
   }
 
-  async findOne(criteria: Record<string, any>): Promise<T | null> {
+  async findOne(criteria: Record<string, unknown>): Promise<T | null> {
     try {
-      const result = await this.model.findOne({ where: criteria }) as T | null;
+      const result = (await this.model.findOne({
+        where: criteria as WhereOptions,
+      })) as T | null;
       return result;
     } catch (error) {
-      logger.error(chalk.red(`Error finding ${this.model.name} record:`), error);
+      logger.error(
+        chalk.red(`Error finding ${this.model.name} record:`),
+        error
+      );
       throw error;
     }
   }
 
-  async exists(criteria: Record<string, any>): Promise<boolean> {
+  async exists(criteria: Record<string, unknown>): Promise<boolean> {
     try {
-      const count = await this.model.count({ where: criteria });
+      const count = await this.model.count({ where: criteria as WhereOptions });
       return count > 0;
     } catch (error) {
-      logger.error(chalk.red(`Error checking ${this.model.name} existence:`), error);
+      logger.error(
+        chalk.red(`Error checking ${this.model.name} existence:`),
+        error
+      );
       throw error;
     }
   }
@@ -149,11 +159,18 @@ export abstract class BaseCrudService<T extends Model> {
   async bulkCreate(records: CreateEntityData[]): Promise<T[]> {
     try {
       if (records.length === 0) return [];
-      const result = await this.model.bulkCreate(records as never[]) as T[];
-      logger.info(chalk.green(`✓ Bulk created ${result.length} ${this.model.name} records`));
+      const result = (await this.model.bulkCreate(records as never[])) as T[];
+      logger.info(
+        chalk.green(
+          `✓ Bulk created ${result.length} ${this.model.name} records`
+        )
+      );
       return result;
     } catch (error) {
-      logger.error(chalk.red(`Error bulk creating ${this.model.name} records:`), error);
+      logger.error(
+        chalk.red(`Error bulk creating ${this.model.name} records:`),
+        error
+      );
       throw error;
     }
   }
@@ -163,39 +180,51 @@ export abstract class BaseCrudService<T extends Model> {
     order?: [string, 'ASC' | 'DESC'][];
     limit?: number;
     offset?: number;
-    include?: any[];
+    include?: unknown[];
   }): Promise<T[]> {
     try {
-      const result = await this.model.findAll(filter) as T[];
+      const result = (await this.model.findAll(filter as FindOptions)) as T[];
       return result;
     } catch (error) {
-      logger.error(chalk.red(`Error finding ${this.model.name} with filter:`), error);
+      logger.error(
+        chalk.red(`Error finding ${this.model.name} with filter:`),
+        error
+      );
       throw error;
     }
   }
 
-  async count(criteria: Record<string, any> = {}): Promise<number> {
+  async count(criteria: Record<string, unknown> = {}): Promise<number> {
     try {
-      return await this.model.count({ where: criteria });
+      return await this.model.count({ where: criteria as WhereOptions });
     } catch (error) {
-      logger.error(chalk.red(`Error counting ${this.model.name} records:`), error);
+      logger.error(
+        chalk.red(`Error counting ${this.model.name} records:`),
+        error
+      );
       throw error;
     }
   }
 
-  async findOrCreate(criteria: Record<string, unknown>, defaults: CreateEntityData = {}): Promise<[T, boolean]> {
+  async findOrCreate(
+    criteria: Record<string, unknown>,
+    defaults: CreateEntityData = {}
+  ): Promise<[T, boolean]> {
     try {
-      const [record, created] = await this.model.findOrCreate({
+      const [record, created] = (await this.model.findOrCreate({
         where: criteria as never,
         defaults: defaults as never,
-      }) as [T, boolean];
+      })) as [T, boolean];
       if (created) {
         logger.info(chalk.green(`✓ Created new ${this.model.name} record`));
       }
       return [record, created];
     } catch (error) {
-      logger.error(chalk.red(`Error in findOrCreate for ${this.model.name}:`), error);
+      logger.error(
+        chalk.red(`Error in findOrCreate for ${this.model.name}:`),
+        error
+      );
       throw error;
     }
   }
-} 
+}

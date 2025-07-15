@@ -1,12 +1,12 @@
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
     container_name: api_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-api_template}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -17,3 +17,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  api_network:
+    driver: bridge

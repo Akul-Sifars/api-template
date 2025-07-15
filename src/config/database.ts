@@ -7,36 +7,38 @@
  */
 
 import { Sequelize, DataTypes, Model } from 'sequelize';
-import { logger } from '../shared/utils/logger';
+import { logger } from '@/utils/logger';
 import chalk from 'chalk';
+import config from '@/utils/env';
 
 // PostgreSQL database configuration
 const getDatabaseConfig = () => {
   return {
-    host: process.env['DATABASE_HOST'] || 'localhost',
-    port: parseInt(process.env['DATABASE_PORT'] || '5432'),
-    database: process.env['DATABASE_NAME'] || 'api_template',
-    username: process.env['DATABASE_USER'] || 'postgres',
-    password: process.env['DATABASE_PASSWORD'] || 'password',
-    dialect: 'postgres' as const,
-    dialectOptions: {
-      ssl: process.env['NODE_ENV'] === 'production' ? { rejectUnauthorized: false } : false,
-    },
-    pool: {
-      max: parseInt(process.env['DATABASE_MAX_CONNECTIONS'] || '20'),
-      min: 0,
-      acquire: parseInt(process.env['DATABASE_CONNECTION_TIMEOUT'] || '2000'),
-      idle: parseInt(process.env['DATABASE_IDLE_TIMEOUT'] || '30000'),
-    },
-    logging: process.env['NODE_ENV'] === 'development' 
-      ? (msg: string) => logger.debug(chalk.gray(`[DB] ${msg}`))
-      : false,
+    host: config.DATABASE_HOST,
+    port: config.DATABASE_PORT,
+    database: config.DATABASE_NAME,
+    username: config.DATABASE_USER,
+    password: config.DATABASE_PASSWORD,
+    logging:
+      config.NODE_ENV === 'development'
+        ? (msg: string) => logger.debug(chalk.gray(`[DB] ${msg}`))
+        : false,
   };
 };
 
 // Create Sequelize instance with PostgreSQL configuration
 const dbConfig = getDatabaseConfig();
-const sequelize = new Sequelize(dbConfig);
+const sequelize = new Sequelize(
+  dbConfig.database,
+  dbConfig.username,
+  dbConfig.password,
+  {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    dialect: 'postgres',
+    logging: dbConfig.logging,
+  }
+);
 
 // Test database connection
 export const testConnection = async (): Promise<boolean> => {
@@ -45,7 +47,10 @@ export const testConnection = async (): Promise<boolean> => {
     logger.info(chalk.green('✓ Database connection successful (PostgreSQL)'));
     return true;
   } catch (error) {
-    logger.error(chalk.red('✗ Database connection failed (PostgreSQL):'), error);
+    logger.error(
+      chalk.red('✗ Database connection failed (PostgreSQL):'),
+      error
+    );
     return false;
   }
 };
@@ -54,7 +59,9 @@ export const testConnection = async (): Promise<boolean> => {
 export const syncDatabase = async (force: boolean = false): Promise<void> => {
   try {
     await sequelize.sync({ force });
-    logger.info(chalk.green(`✓ Database synced ${force ? '(forced)' : ''} (PostgreSQL)`));
+    logger.info(
+      chalk.green(`✓ Database synced ${force ? '(forced)' : ''} (PostgreSQL)`)
+    );
   } catch (error) {
     logger.error(chalk.red('✗ Database sync failed (PostgreSQL):'), error);
     throw error;
@@ -78,4 +85,4 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-export { sequelize, DataTypes, Model }; 
+export { sequelize, DataTypes, Model };
